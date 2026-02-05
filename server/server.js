@@ -82,6 +82,34 @@ app.get('/api/setup-db', async (req, res) => {
         const { pool } = await import('./database/db.js');
         const client = await pool.connect();
 
+        // First create tables
+        const schemaSQL = `
+CREATE TABLE IF NOT EXISTS themes (
+    id SERIAL PRIMARY KEY,
+    category VARCHAR(20) NOT NULL CHECK (category IN ('jugador', 'club', 'estadio', 'partido', 'dt')),
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    difficulty INTEGER DEFAULT 2 CHECK (difficulty BETWEEN 1 AND 3),
+    hints JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS games (
+    id SERIAL PRIMARY KEY,
+    theme_id INTEGER REFERENCES themes(id),
+    players JSONB NOT NULL,
+    impostor_player VARCHAR(50),
+    winner VARCHAR(20) CHECK (winner IN ('impostor', 'innocents')),
+    rounds INTEGER DEFAULT 1,
+    clues JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_themes_category ON themes(category);
+CREATE INDEX IF NOT EXISTS idx_games_created_at ON games(created_at DESC);
+        `;
+
+        // Then insert data
         const seedSQL = `
 INSERT INTO themes (category, name, description, difficulty, hints) VALUES
 ('jugador', 'Lionel Messi', 'Considerado uno de los mejores jugadores de la historia', 1, '["Argentina", "Barcelona", "8 Balones de Oro", "Qatar 2022", "PSG"]'),
@@ -97,12 +125,13 @@ INSERT INTO themes (category, name, description, difficulty, hints) VALUES
         `;
 
         try {
+            await client.query(schemaSQL);
             await client.query(seedSQL);
             const result = await client.query('SELECT COUNT(*) FROM themes');
 
             res.json({
                 success: true,
-                message: `✅ Database initialized with ${result.rows[0].count} themes!`,
+                message: `✅ Database ready with ${result.rows[0].count} themes!`,
                 count: parseInt(result.rows[0].count)
             });
         } finally {
