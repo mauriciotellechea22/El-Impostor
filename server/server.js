@@ -37,9 +37,20 @@ const gameManager = new GameManager();
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
 // REST API Routes
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'El Impostor Server Running' });
+});
+
+app.get('/api/test-cors', (req, res) => {
+    res.json({
+        message: 'CORS is working!',
+        origin: req.headers.origin,
+        allowedOrigin: allowedOrigin
+    });
 });
 
 app.get('/api/categories', async (req, res) => {

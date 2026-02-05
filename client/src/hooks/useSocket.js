@@ -8,11 +8,24 @@ export function useSocket() {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        const socketInstance = io(SOCKET_URL);
+        console.log('🔌 Attempting to connect to:', SOCKET_URL);
+
+        const socketInstance = io(SOCKET_URL, {
+            transports: ['websocket', 'polling'],
+            withCredentials: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000
+        });
 
         socketInstance.on('connect', () => {
             console.log('✅ Connected to server');
             setConnected(true);
+        });
+
+        socketInstance.on('connect_error', (error) => {
+            console.error('❌ Connection error:', error.message);
+            console.error('Error type:', error.type);
+            console.error('Error description:', error.description);
         });
 
         socketInstance.on('disconnect', () => {
