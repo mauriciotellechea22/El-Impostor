@@ -51,7 +51,7 @@ export class GameManager {
 
         room.theme = theme;
         room.status = 'playing';
-        room.currentTurnIndex = room.players.length - 1; // Start from last player
+        room.currentTurnIndex = 0; // Start from first player
         room.clues = [];
 
         return room;

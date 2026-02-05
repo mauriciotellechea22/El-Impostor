@@ -16,17 +16,17 @@ export default function Results({ room, navigate }) {
                     textShadow: '0 0 20px var(--danger-glow)',
                     marginTop: '1rem'
                 }}>
-                    {impostorPlayer?.name}
+                    {impostorPlayer?.name || 'Desconocido'}
                 </div>
             </div>
 
             <div className="card mb-3" style={{ maxWidth: '600px', margin: '0 auto' }}>
                 <h3 className="mb-2">El tema era:</h3>
                 <p style={{ fontSize: '2rem', color: 'var(--neon-green)' }}>
-                    {room.theme.name}
+                    {room.theme?.name || 'Desconocido'}
                 </p>
                 <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                    Categoría: {room.theme.category.toUpperCase()}
+                    Categoría: {room.theme?.category?.toUpperCase() || 'N/A'}
                 </p>
             </div>
 
