@@ -51,10 +51,24 @@ export class GameManager {
 
         room.theme = theme;
         room.status = 'playing';
-        room.currentTurnIndex = 0; // Start from first player
+        room.currentRound = 1; // Start at round 1
+        room.currentTurnIndex = 0;
         room.clues = [];
-        room.totalRounds = totalRounds;
-        room.maxRounds = totalRounds; // Store for win condition
+        room.totalRounds = totalRounds; // Store selected rounds
+        room.maxRounds = totalRounds; // CRITICAL FIX: ensure maxRounds is set
+        room.roundHistory = []; // Track all round results
+        room.playerStats = new Map(); // Track wins per player
+
+        // Initialize stats for all players
+        room.players.forEach(player => {
+            room.playerStats.set(player.id, {
+                roundsWonAsImpostor: 0,
+                roundsWonAsInnocent: 0,
+                timesImpostor: 0
+            });
+        });
+
+        console.log(`🎮 Game started: ${totalRounds} rounds, first impostor: ${room.players.find(p => p.id === room.impostorId)?.name}`);
 
         return room;
     }
