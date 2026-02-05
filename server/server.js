@@ -10,17 +10,22 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
+
+// CORS configuration
+const corsOptions = {
+    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    credentials: true
+};
+
 const io = new Server(httpServer, {
-    cors: {
-        origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-        methods: ['GET', 'POST']
-    }
+    cors: corsOptions
 });
 
 const gameManager = new GameManager();
 
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // REST API Routes
