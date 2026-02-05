@@ -138,12 +138,18 @@ export class GameManager {
             voteCounts: Object.fromEntries(voteCounts)
         };
 
-        // Check win conditions
-        const winner = this.checkWinCondition(room);
+        // Check if impostor eliminated OR too few players (immediate win conditions)
+        const alivePlayers = this.getAlivePlayers(room);
+        const impostorAlive = alivePlayers.some(p => p.id === room.impostorId);
 
-        if (winner) {
+        if (!impostorAlive) {
             room.status = 'finished';
-            return { room, voteResult, winner, gameOver: true };
+            return { room, voteResult, winner: 'innocents', gameOver: true };
+        }
+
+        if (alivePlayers.length <= 2) {
+            room.status = 'finished';
+            return { room, voteResult, winner: 'impostor', gameOver: true };
         }
 
         // Continue to next round
@@ -151,6 +157,13 @@ export class GameManager {
         room.currentTurnIndex = 0;
         room.status = 'playing';
         room.votes.clear();
+
+        // Check if max rounds reached AFTER incrementing
+        const maxRounds = room.maxRounds || room.totalRounds || 5;
+        if (room.currentRound > maxRounds) {
+            room.status = 'finished';
+            return { room, voteResult, winner: 'impostor', gameOver: true };
+        }
 
         return { room, voteResult, winner: null, gameOver: false };
     }
