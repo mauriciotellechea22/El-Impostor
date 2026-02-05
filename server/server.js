@@ -79,12 +79,22 @@ app.get('/api/categories', async (req, res) => {
 // TEMPORARY: Setup database (visit this URL once to initialize)
 app.get('/api/setup-db', async (req, res) => {
     try {
-        const fs = await import('fs');
-        const pathModule = await import('path');
-        const seedSQL = fs.readFileSync(pathModule.join(__dirname, 'database/seed.sql'), 'utf-8');
-
         const { pool } = await import('./database/db.js');
         const client = await pool.connect();
+
+        const seedSQL = `
+INSERT INTO themes (category, name, description, difficulty, hints) VALUES
+('jugador', 'Lionel Messi', 'Considerado uno de los mejores jugadores de la historia', 1, '["Argentina", "Barcelona", "8 Balones de Oro", "Qatar 2022", "PSG"]'),
+('jugador', 'Diego Maradona', 'Leyenda argentina del fútbol mundial', 1, '["Argentina", "Napoli", "Mano de Dios", "México 86", "10"]'),
+('jugador', 'Cristiano Ronaldo', 'Máximo goleador de la Champions League', 1, '["Portugal", "Real Madrid", "5 Champions", "CR7", "Manchester"]'),
+('club', 'Real Madrid', 'Club más ganador de Europa', 1, '["España", "15 Champions", "Blanco", "Bernabéu", "Galácticos"]'),
+('club', 'FC Barcelona', 'Más que un club', 1, '["España", "Camp Nou", "Azulgrana", "Messi", "Cataluña"]'),
+('club', 'Boca Juniors', 'Pasión argentina', 1, '["Argentina", "Bombonera", "Azul y Oro", "Maradona", "Libertadores"]'),
+('estadio', 'Camp Nou', 'Estadio más grande de Europa', 1, '["Barcelona", "99.000", "Azulgrana", "Messi", "España"]'),
+('estadio', 'La Bombonera', 'La cancha que tiembla', 1, '["Buenos Aires", "Boca", "Verticalidad", "Argentina", "54.000"]'),
+('partido', 'Argentina 3-3 Francia (Mundial 2022)', 'Final más épica del mundo', 1, '["Qatar", "Messi", "Mbappé", "Penales", "Lusail"]'),
+('dt', 'Pep Guardiola', 'Maestro del tiki-taka', 2, '["Barcelona", "Bayern", "City", "Tiki-taka", "Calvo"]');
+        `;
 
         try {
             await client.query(seedSQL);
@@ -93,7 +103,7 @@ app.get('/api/setup-db', async (req, res) => {
             res.json({
                 success: true,
                 message: `✅ Database initialized with ${result.rows[0].count} themes!`,
-                count: result.rows[0].count
+                count: parseInt(result.rows[0].count)
             });
         } finally {
             client.release();
@@ -103,7 +113,7 @@ app.get('/api/setup-db', async (req, res) => {
         res.json({
             success: false,
             error: error.message,
-            tip: 'Database might already be initialized. Try starting a game!'
+            stack: error.stack
         });
     }
 });
