@@ -80,7 +80,8 @@ app.get('/api/categories', async (req, res) => {
 app.get('/api/setup-db', async (req, res) => {
     try {
         const fs = await import('fs');
-        const seedSQL = fs.readFileSync(join(__dirname, 'database/seed.sql'), 'utf-8');
+        const pathModule = await import('path');
+        const seedSQL = fs.readFileSync(pathModule.join(__dirname, 'database/seed.sql'), 'utf-8');
 
         const { pool } = await import('./database/db.js');
         const client = await pool.connect();
