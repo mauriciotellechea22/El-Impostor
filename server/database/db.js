@@ -9,6 +9,16 @@ const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
 });
 
+// Test connection but don't crash if it fails
+pool.connect()
+    .then(client => {
+        console.log('✅ Database connected');
+        client.release();
+    })
+    .catch(err => {
+        console.warn('⚠️  Database not ready:', err.message);
+    });
+
 // Get random theme by category
 export async function getRandomTheme(category = null) {
     const client = await pool.connect();

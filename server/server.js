@@ -42,7 +42,12 @@ app.options('*', cors(corsOptions));
 
 // REST API Routes
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', message: 'El Impostor Server Running' });
+    res.status(200).json({
+        status: 'OK',
+        message: 'El Impostor Server Running',
+        uptime: process.uptime(),
+        cors: allowedOrigin
+    });
 });
 
 app.get('/api/test-cors', (req, res) => {
