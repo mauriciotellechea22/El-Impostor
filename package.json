@@ -1,12 +1,13 @@
 {
     "name": "el-impostor",
-    "version": "0.1.0",
-    "description": "El Impostor - Football Game",
+    "version": "1.0.0",
+    "type": "module",
     "scripts": {
+        "build": "cd client && npm install && npm run build && cd ../server && npm install",
         "start": "cd server && npm start",
-        "install": "cd server && npm install"
+        "db:setup": "cd server && node database/setup.js"
     },
     "keywords": [],
-    "author": "Mauricio Tellechea",
-    "license": "MIT"
+    "author": "",
+    "license": "ISC"
 }
