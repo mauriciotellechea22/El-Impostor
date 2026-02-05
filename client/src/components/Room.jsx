@@ -46,7 +46,9 @@ export default function Room({ socket }) {
         socket.on('voteResult', ({ eliminatedId, eliminatedName, wasImpostor, voteCounts, room, gameOver }) => {
             setVoteResult({ eliminatedId, eliminatedName, wasImpostor, voteCounts });
             setRoom(room);
-            if (!gameOver) {
+            if (gameOver) {
+                // Game over - don't change phase yet, wait for gameOver event
+            } else {
                 setGamePhase('roundResult'); // Intermediate result
             }
         });
