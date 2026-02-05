@@ -1,6 +1,10 @@
+import { useState } from 'react';
+
 export default function WaitingRoom({ socket, room, roomId }) {
+    const [totalRounds, setTotalRounds] = useState(5);
+
     const handleStartGame = () => {
-        socket.emit('startGame', { roomId });
+        socket.emit('startGame', { roomId, totalRounds });
     };
 
     return (
@@ -53,13 +57,31 @@ export default function WaitingRoom({ socket, room, roomId }) {
             )}
 
             {room.isHost ? (
-                <button
-                    className="btn"
-                    onClick={handleStartGame}
-                    disabled={room.players.length < 3}
-                >
-                    Comenzar Juego
-                </button>
+                <>
+                    <div className="card mb-2" style={{ maxWidth: '400px', margin: '0 auto' }}>
+                        <label style={{ fontSize: '1.2rem', marginBottom: '1rem', display: 'block' }}>
+                            Número de Rondas
+                        </label>
+                        <select
+                            className="input"
+                            value={totalRounds}
+                            onChange={(e) => setTotalRounds(Number(e.target.value))}
+                            style={{ fontSize: '1.2rem', textAlign: 'center' }}
+                        >
+                            {[5, 6, 7, 8, 9, 10].map(n => (
+                                <option key={n} value={n}>{n} rondas</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <button
+                        className="btn"
+                        onClick={handleStartGame}
+                        disabled={room.players.length < 3}
+                    >
+                        Comenzar Juego
+                    </button>
+                </>
             ) : (
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
                     Esperando que el host inicie el juego...

@@ -198,7 +198,7 @@ io.on('connection', (socket) => {
     });
 
     // Start game
-    socket.on('startGame', async ({ roomId }) => {
+    socket.on('startGame', async ({ roomId, totalRounds = 5 }) => {
         try {
             const room = gameManager.getRoom(roomId);
 
@@ -214,26 +214,26 @@ io.on('connection', (socket) => {
 
             // Get random theme
             const theme = await getRandomTheme();
-            const startedRoom = gameManager.startGame(roomId, theme);
+            const startedRoom = gameManager.startGame(roomId, theme, totalRounds);
 
             if (!startedRoom) {
                 socket.emit('error', { message: 'Failed to start game' });
                 return;
             }
 
-            // Send different data to impostor vs others
+            // Send data to all players (impostor also sees theme now)
             startedRoom.players.forEach((player) => {
                 const playerSocket = io.sockets.sockets.get(player.id);
                 if (playerSocket) {
                     playerSocket.emit('gameStarted', {
                         room: sanitizeRoom(startedRoom, player.id),
                         isImpostor: player.id === startedRoom.impostorId,
-                        theme: player.id === startedRoom.impostorId ? null : theme
+                        theme: theme // Everyone sees the theme
                     });
                 }
             });
 
-            console.log(`🎲 Game started in room ${roomId} - Theme: ${theme.name}`);
+            console.log(`🎲 Game started in room ${roomId} - Theme: ${theme.name} - ${totalRounds} rounds`);
         } catch (error) {
             console.error('Start game error:', error);
             socket.emit('error', { message: 'Failed to start game' });
@@ -308,13 +308,27 @@ io.on('connection', (socket) => {
 
                     console.log(`🏆 Game over in room ${roomId} - Winner: ${winner}`);
                 } else {
-                    // Continue to next round
-                    setTimeout(() => {
+                    // Continue to next round with new theme
+                    setTimeout(async () => {
+                        // Get new random theme for next round
+                        const newTheme = await getRandomTheme();
+                        room.theme = newTheme;
+
                         const currentPlayer = gameManager.getCurrentPlayer(room);
-                        io.to(roomId).emit('nextRound', {
-                            room: sanitizeRoomForAll(room),
-                            currentPlayer
+
+                        // Send new theme to all players
+                        room.players.forEach((player) => {
+                            const playerSocket = io.sockets.sockets.get(player.id);
+                            if (playerSocket) {
+                                playerSocket.emit('nextRound', {
+                                    room: sanitizeRoom(room, player.id),
+                                    currentPlayer,
+                                    theme: newTheme // Everyone sees new theme
+                                });
+                            }
                         });
+
+                        console.log(`🔄 Round ${room.currentRound} in room ${roomId} - New theme: ${newTheme.name}`);
                     }, 3000);
                 }
             }

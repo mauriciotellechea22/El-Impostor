@@ -45,8 +45,9 @@ export default function Room({ socket }) {
             setRoom(room);
         });
 
-        socket.on('nextRound', ({ room }) => {
+        socket.on('nextRound', ({ room, theme: newTheme }) => {
             setRoom(room);
+            setTheme(newTheme);
             setGamePhase('playing');
         });
 

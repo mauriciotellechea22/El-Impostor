@@ -41,7 +41,7 @@ export class GameManager {
         return room;
     }
 
-    startGame(roomId, theme) {
+    startGame(roomId, theme, totalRounds = 5) {
         const room = this.rooms.get(roomId);
         if (!room || room.players.length < 3) return null;
 
@@ -53,6 +53,8 @@ export class GameManager {
         room.status = 'playing';
         room.currentTurnIndex = 0; // Start from first player
         room.clues = [];
+        room.totalRounds = totalRounds;
+        room.maxRounds = totalRounds; // Store for win condition
 
         return room;
     }
@@ -162,8 +164,13 @@ export class GameManager {
             return 'innocents';
         }
 
-        // If only 3 players remain and impostor is alive, impostor wins
-        if (alivePlayers.length <= 3) {
+        // If max rounds reached and impostor is alive, impostor wins
+        if (room.currentRound >= room.maxRounds) {
+            return 'impostor';
+        }
+
+        // If only 2 players remain and impostor is alive, impostor wins
+        if (alivePlayers.length <= 2) {
             return 'impostor';
         }
 
