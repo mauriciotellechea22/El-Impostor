@@ -76,6 +76,37 @@ app.get('/api/categories', async (req, res) => {
     }
 });
 
+// TEMPORARY: Setup database (visit this URL once to initialize)
+app.get('/api/setup-db', async (req, res) => {
+    try {
+        const fs = await import('fs');
+        const seedSQL = fs.readFileSync(join(__dirname, 'database/seed.sql'), 'utf-8');
+
+        const { pool } = await import('./database/db.js');
+        const client = await pool.connect();
+
+        try {
+            await client.query(seedSQL);
+            const result = await client.query('SELECT COUNT(*) FROM themes');
+
+            res.json({
+                success: true,
+                message: `✅ Database initialized with ${result.rows[0].count} themes!`,
+                count: result.rows[0].count
+            });
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        console.error('Setup error:', error);
+        res.json({
+            success: false,
+            error: error.message,
+            tip: 'Database might already be initialized. Try starting a game!'
+        });
+    }
+});
+
 // Socket.IO Events
 io.on('connection', (socket) => {
     console.log(`✅ Player connected: ${socket.id}`);
