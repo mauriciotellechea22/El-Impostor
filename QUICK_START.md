@@ -1,164 +1,134 @@
-# 📋 Instrucciones Rápidas - El Impostor
+# Pasos Finales para Completar El Impostor
 
-## 🚀 Inicio Rápido (Desarrollo Local)
-
-### 1. Crear Base de Datos
-```bash
-createdb elimpostor
-```
-
-### 2. Configurar Variables de Entorno
-El archivo `server/.env` ya está creado con valores por defecto.
-**Edita la contraseña:**
-```env
-DATABASE_URL=postgresql://postgres:TU_CONTRASEÑA@localhost:5432/elimpostor
-```
-
-### 3. Inicializar Base de Datos
-```bash
-cd server
-npm run db:setup
-```
-
-### 4. Iniciar Servidores
-
-**Terminal 1 - Backend (Puerto 3001):**
-```bash
-cd server
-npm run dev
-```
-
-**Terminal 2 - Frontend (Puerto 5173):**
-```bash
-cd client
-npm run dev
-```
-
-### 5. Jugar
-Abre **http://localhost:5173** en 3+ tabs/ventanas para probar.
+## ✅ Backend Deployed
+- URL: https://el-impostor.production.up.railway.app
+- Status: Running ✅
 
 ---
 
-## 🎮 Cómo Jugar
+## 🔴 PASO 1: Agregar PostgreSQL (URGENTE)
 
-1. **Crear Sala**: Da tu nombre → "Crear Sala" → Comparte código
-2. **Unirse**: Otros jugadores usan el código de 4 dígitos
-3. **Iniciar**: Host inicia con 3+ jugadores
-4. **Jugar**: Da pistas de 1-2 palabras sobre el tema
-5. **Votar**: Elimina al sospechoso
-6. **Ganar**: Inocentes eliminan al impostor, o impostor sobrevive
+**En Railway Dashboard:**
+1. Abre tu proyecto "El-Impostor"
+2. Click **"+ New"** (botón arriba a la derecha)
+3. Selecciona **"Database"** → **"PostgreSQL"**
+4. Espera 30 segundos a que se cree
+5. Railway conectará automáticamente `DATABASE_URL`
+
+**Importante:** Sin PostgreSQL el servidor crasheará cuando intentes jugar.
 
 ---
 
-## 🚀 Deployment a Railway
+## 📊 PASO 2: Inicializar Base de Datos
 
-### Paso 1: Push a GitHub
-```bash
-# Crear repo en GitHub, luego:
-git remote add origin https://github.com/TU_USUARIO/el-impostor.git
-git branch -M main
-git push -u origin main
-```
+Una vez agregada PostgreSQL:
 
-### Paso 2: Deploy Backend en Railway
-1. Ir a **https://railway.app**
-2. "New Project" → "Deploy from GitHub repo"
-3. Seleccionar `el-impostor`
-4. Railway detectará la configuración automáticamente
-
-### Paso 3: Agregar PostgreSQL
-1. En el proyecto Railway: "New" → "Database" → "PostgreSQL"
-2. Railway conectará automáticamente la variable `DATABASE_URL`
-
-### Paso 4: Inicializar DB en Railway
 ```bash
 # Instalar Railway CLI
-npm i -g @railway/cli
+npm install -g @railway/cli
 
 # Login
 railway login
 
-# Link al proyecto
+# Vincular al proyecto
 railway link
 
-# Inicializar DB
+# Inicializar DB con 60+ temas de fútbol
 railway run npm run db:setup
 ```
 
-### Paso 5: Deploy Frontend en Vercel
+Deberías ver:
+```
+🔧 Setting up database...
+✅ Schema created
+✅ Seed data inserted
+✅ Database ready with 60 themes
+```
+
+---
+
+## 🎨 PASO 3: Deploy Frontend en Vercel
+
+El backend NO tiene interfaz. Necesitas deployar el **frontend** (cliente React).
+
+### Opción A: Desde VS Code (Recomendado)
+
 ```bash
+# Instalar Vercel CLI
+npm install -g vercel
+
+# Login
+vercel login
+
+# Deploy desde carpeta client
 cd client
 vercel
+
+# Cuando pregunte:
+# - Setup and deploy? → Yes
+# - Which scope? → Tu cuenta
+# - Link to existing project? → No
+# - Project name? → el-impostor-client (Enter)
+# - Directory? → ./ (Enter)
+# - Override settings? → No
+
+# Deploy a producción
+vercel --prod
 ```
 
-Cuando pregunte:
-- **Project name:** el-impostor-client
-- **Directory:** ./
-- **Build Command:** `npm run build`
-- **Output Directory:** `dist`
+### Opción B: Desde Vercel Dashboard
 
-### Paso 6: Configurar Variable en Vercel
-1. Ir al dashboard de Vercel
-2. Project Settings → Environment Variables
-3. Agregar:
+1. Ve a https://vercel.com/new
+2. Importa el repo: `mauriciotellechea22/El-Impostor`
+3. **Root Directory:** `client`
+4. **Framework Preset:** Vite
+5. **Build Command:** `npm run build`
+6. **Output Directory:** `dist`
+7. Click **"Deploy"**
+
+---
+
+## 🔗 PASO 4: Conectar Frontend con Backend
+
+**En Vercel:**
+1. Ve a tu proyecto → **Settings** → **Environment Variables**
+2. Agrega:
    - **Name:** `VITE_API_URL`
-   - **Value:** URL de Railway (ej: `https://tu-proyecto.up.railway.app`)
-4. Redeploy: `vercel --prod`
+   - **Value:** `https://el-impostor.production.up.railway.app`
+3. **Redeploy:** Dashboard → "Deployments" → Click en el último → "Redeploy"
+
+**EN RAILWAY:**
+1. Ve a tu servicio → **Variables**
+2. Edita `CORS_ORIGIN`:
+   - **Value:** `https://tu-proyecto.vercel.app` (copia la URL que te dio Vercel)
+3. Railway redeplegará automáticamente
 
 ---
 
-## 📊 Tabla de Comandos Útiles
+## ✅ Verificación Final
 
-| Comando | Descripción |
-|---------|-------------|
-| `npm run dev` | Iniciar dev server (backend o frontend) |
-| `npm run db:setup` | Crear tablas + poblar datos |
-| `railway up` | Deploy a Railway |
-| `vercel --prod` | Deploy producción Vercel |
-| `git log` | Ver commits |
+Una vez completado todo:
+1. Abre tu URL de Vercel (ej: `https://el-impostor-client.vercel.app`)
+2. Deberías ver el lobby con "EL IMPOSTOR" en verde neón
+3. Crea una sala y prueba con otra pestaña
 
 ---
 
-## ⚠️ Troubleshooting
+## 🐛 Si algo falla:
 
-### Error: "Cannot connect to database"
-- Verifica que PostgreSQL esté corriendo
-- Revisa credenciales en `server/.env`
+**Frontend no carga:**
+- Verifica que desplegaste desde `client/`
+- Revisa logs en Vercel Dashboard
 
-### Error: "CORS policy"
-- Actualiza `CORS_ORIGIN` en `server/.env` con la URL del frontend
+**"Error de conexión":**
+- Verifica `VITE_API_URL` en Vercel
+- Verifica `CORS_ORIGIN` en Railway
+- Ambas URLs deben coincidir
 
-### Frontend no se conecta
-- Verifica que backend esté corriendo en puerto 3001
-- Revisa `client/.env` tiene `VITE_API_URL` correcto
-
----
-
-## 💡 Tips
-
-- **Probar localmente con múltiples jugadores:** Usa ventanas incógnito
-- **Ver logs de Socket.io:** Abre DevTools → Console
-- **Cambiar puerto del servidor:** Edita `PORT` en `server/.env`
+**Base de datos error:**
+- Asegúrate de haber agregado PostgreSQL
+- Ejecuta `railway run npm run db:setup`
 
 ---
 
-## 🎨 Personalización
-
-### Cambiar Colores 412
-Edita `client/src/index.css`:
-```css
-:root {
-  --neon-green: #00FF00;  /* Color principal */
-  --dark-bg: #0A0A0A;     /* Fondo */
-}
-```
-
-### Agregar Más Temas de Fútbol
-Edita `server/database/seed.sql` y vuelve a correr:
-```bash
-npm run db:setup
-```
-
----
-
-¡Listo para jugar! 🎮⚽
+¿En qué paso estás? ¿Necesitas ayuda con alguno?
