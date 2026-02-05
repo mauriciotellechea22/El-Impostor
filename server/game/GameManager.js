@@ -182,6 +182,31 @@ export class GameManager {
         return { room, voteResult, winner: null, gameOver: false };
     }
 
+    calculateFinalWinner(room) {
+        let maxWins = 0;
+        let winnerId = null;
+        let winnerName = null;
+
+        room.playerStats.forEach((stats, playerId) => {
+            if (stats.roundsWonAsImpostor > maxWins) {
+                maxWins = stats.roundsWonAsImpostor;
+                winnerId = playerId;
+                winnerName = room.players.find(p => p.id === playerId)?.name;
+            }
+        });
+
+        return {
+            winnerId,
+            winnerName,
+            roundsWon: maxWins,
+            scoreboard: Array.from(room.playerStats.entries()).map(([id, stats]) => ({
+                playerId: id,
+                playerName: room.players.find(p => p.id === id)?.name,
+                ...stats
+            }))
+        };
+    }
+
     checkWinCondition(room) {
         const alivePlayers = this.getAlivePlayers(room);
 
