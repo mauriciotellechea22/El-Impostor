@@ -40,28 +40,29 @@ export default function GameBoard({ socket, room, roomId, isImpostor, theme }) {
             <div className="text-center mb-3">
                 <h2>Ronda {room.currentRound}</h2>
 
-                {isImpostor ? (
+                {isImpostor && (
                     <div className="card mt-2" style={{
                         background: 'var(--danger-red)',
                         maxWidth: '600px',
-                        margin: '1rem auto'
+                        margin: '1rem auto',
+                        padding: '1rem'
                     }}>
-                        <h2 style={{ color: 'white' }}>¡ERES EL IMPOSTOR!</h2>
-                        <p style={{ fontSize: '1.2rem', marginTop: '0.5rem' }}>
-                            No conoces el tema. Intenta adivinarlo y mezclarte.
-                        </p>
-                    </div>
-                ) : (
-                    <div className="card mt-2" style={{ maxWidth: '600px', margin: '1rem auto' }}>
-                        <h3 style={{ marginBottom: '1rem' }}>Tema:</h3>
-                        <p style={{ fontSize: '2rem', color: 'var(--neon-green)' }}>
-                            {theme.name}
-                        </p>
-                        <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                            Categoría: {theme.category.toUpperCase()}
+                        <h2 style={{ color: 'white', marginBottom: '0.5rem' }}>¡ERES EL IMPOSTOR!</h2>
+                        <p style={{ fontSize: '1rem', margin: 0 }}>
+                            Intenta mezclarte con tus pistas.
                         </p>
                     </div>
                 )}
+
+                <div className="card mt-2" style={{ maxWidth: '600px', margin: '1rem auto' }}>
+                    <h3 style={{ marginBottom: '1rem' }}>Tema:</h3>
+                    <p style={{ fontSize: '2rem', color: 'var(--neon-green)' }}>
+                        {theme.name}
+                    </p>
+                    <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                        Categoría: {theme.category.toUpperCase()}
+                    </p>
+                </div>
             </div>
 
             {/* Main Game Area */}
