@@ -333,6 +333,32 @@ io.on('connection', (socket) => {
                 return;
             }
 
+            // Increment round counter
+            room.currentRound++;
+
+            // Reset for new round
+            room.currentTurnIndex = 0;
+            room.status = 'playing';
+            room.votes.clear();
+            room.clues = [];
+            room.players.forEach(p => p.isAlive = true); // Revive all players for new round
+            room.eliminatedPlayers = [];
+
+            // Select NEW random impostor (try to avoid previous if possible)
+            const previousImpostor = room.impostorId;
+            let newImpostorId;
+
+            do {
+                const randomIndex = Math.floor(Math.random() * room.players.length);
+                newImpostorId = room.players[randomIndex].id;
+            } while (newImpostorId === previousImpostor && room.players.length > 1);
+
+            room.impostorId = newImpostorId;
+
+            // Update stats
+            const stats = room.playerStats.get(newImpostorId);
+            if (stats) stats.timesImpostor++;
+
             // Get new random theme for next round
             const newTheme = await getRandomTheme();
             room.theme = newTheme;
@@ -351,7 +377,7 @@ io.on('connection', (socket) => {
                 }
             });
 
-            console.log(`🔄 Round ${room.currentRound} in room ${roomId} - New theme: ${newTheme.name}`);
+            console.log(`🔄 Round ${room.currentRound}/${room.maxRounds} - New impostor: ${room.players.find(p => p.id === newImpostorId)?.name}`);
         } catch (error) {
             console.error('Continue round error:', error);
             socket.emit('error', { message: 'Failed to continue to next round' });
