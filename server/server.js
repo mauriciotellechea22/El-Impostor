@@ -109,10 +109,15 @@ io.on('connection', (socket) => {
 
             socket.join(roomId);
 
-            // Notify all players in room
-            io.to(roomId).emit('playerJoined', {
-                player: { id: socket.id, name: playerName },
-                room: sanitizeRoom(room, socket.id)
+            // Send personalized room data to each player
+            room.players.forEach((player) => {
+                const playerSocket = io.sockets.sockets.get(player.id);
+                if (playerSocket) {
+                    playerSocket.emit('playerJoined', {
+                        player: { id: socket.id, name: playerName },
+                        room: sanitizeRoom(room, player.id)
+                    });
+                }
             });
 
             console.log(`👤 ${playerName} joined room ${roomId}`);
