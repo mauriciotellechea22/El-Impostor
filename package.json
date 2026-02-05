@@ -1,0 +1,12 @@
+{
+    "name": "el-impostor",
+    "version": "0.1.0",
+    "description": "El Impostor - Football Game",
+    "scripts": {
+        "start": "cd server && npm start",
+        "install": "cd server && npm install"
+    },
+    "keywords": [],
+    "author": "Mauricio Tellechea",
+    "license": "MIT"
+}
