@@ -282,9 +282,16 @@ io.on('connection', (socket) => {
 
             // If voting complete
             if (voteResult) {
-                io.to(roomId).emit('voteResult', {
-                    ...voteResult,
-                    room: sanitizeRoomForAll(room)
+                // Send vote result with gameOver flag to all players
+                room.players.forEach((player) => {
+                    const playerSocket = io.sockets.sockets.get(player.id);
+                    if (playerSocket) {
+                        playerSocket.emit('voteResult', {
+                            ...voteResult,
+                            room: sanitizeRoom(room, player.id),
+                            gameOver: gameOver
+                        });
+                    }
                 });
 
                 if (gameOver) {
@@ -307,34 +314,47 @@ io.on('connection', (socket) => {
                     });
 
                     console.log(`🏆 Game over in room ${roomId} - Winner: ${winner}`);
-                } else {
-                    // Continue to next round with new theme
-                    setTimeout(async () => {
-                        // Get new random theme for next round
-                        const newTheme = await getRandomTheme();
-                        room.theme = newTheme;
-
-                        const currentPlayer = gameManager.getCurrentPlayer(room);
-
-                        // Send new theme to all players
-                        room.players.forEach((player) => {
-                            const playerSocket = io.sockets.sockets.get(player.id);
-                            if (playerSocket) {
-                                playerSocket.emit('nextRound', {
-                                    room: sanitizeRoom(room, player.id),
-                                    currentPlayer,
-                                    theme: newTheme // Everyone sees new theme
-                                });
-                            }
-                        });
-
-                        console.log(`🔄 Round ${room.currentRound} in room ${roomId} - New theme: ${newTheme.name}`);
-                    }, 3000);
                 }
+                // If not gameOver, wait for host to continue (no auto-continue)
             }
         } catch (error) {
             console.error('Vote error:', error);
             socket.emit('error', { message: 'Failed to submit vote' });
+        }
+    });
+
+    // Continue to next round (host only)
+    socket.on('continueToNextRound', async ({ roomId }) => {
+        try {
+            const room = gameManager.getRoom(roomId);
+
+            if (!room || room.host !== socket.id) {
+                socket.emit('error', { message: 'Only host can continue to next round' });
+                return;
+            }
+
+            // Get new random theme for next round
+            const newTheme = await getRandomTheme();
+            room.theme = newTheme;
+
+            const currentPlayer = gameManager.getCurrentPlayer(room);
+
+            // Send new theme to all players
+            room.players.forEach((player) => {
+                const playerSocket = io.sockets.sockets.get(player.id);
+                if (playerSocket) {
+                    playerSocket.emit('nextRound', {
+                        room: sanitizeRoom(room, player.id),
+                        currentPlayer,
+                        theme: newTheme // Everyone sees new theme
+                    });
+                }
+            });
+
+            console.log(`🔄 Round ${room.currentRound} in room ${roomId} - New theme: ${newTheme.name}`);
+        } catch (error) {
+            console.error('Continue round error:', error);
+            socket.emit('error', { message: 'Failed to continue to next round' });
         }
     });
 

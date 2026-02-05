@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import WaitingRoom from './WaitingRoom';
 import GameBoard from './GameBoard';
 import VotingPhase from './VotingPhase';
+import RoundResult from './RoundResult';
 import Results from './Results';
 
 export default function Room({ socket }) {
@@ -11,7 +12,8 @@ export default function Room({ socket }) {
     const [room, setRoom] = useState(null);
     const [isImpostor, setIsImpostor] = useState(false);
     const [theme, setTheme] = useState(null);
-    const [gamePhase, setGamePhase] = useState('waiting'); // waiting, playing, voting, results
+    const [voteResult, setVoteResult] = useState(null);
+    const [gamePhase, setGamePhase] = useState('waiting'); // waiting, playing, voting, roundResult, results
 
     useEffect(() => {
         if (!socket) return;
@@ -41,8 +43,12 @@ export default function Room({ socket }) {
             setGamePhase('voting');
         });
 
-        socket.on('voteResult', ({ room }) => {
+        socket.on('voteResult', ({ eliminatedId, eliminatedName, wasImpostor, voteCounts, room, gameOver }) => {
+            setVoteResult({ eliminatedId, eliminatedName, wasImpostor, voteCounts });
             setRoom(room);
+            if (!gameOver) {
+                setGamePhase('roundResult'); // Intermediate result
+            }
         });
 
         socket.on('nextRound', ({ room, theme: newTheme }) => {
@@ -109,6 +115,15 @@ export default function Room({ socket }) {
                     socket={socket}
                     room={room}
                     roomId={roomId}
+                />
+            )}
+
+            {gamePhase === 'roundResult' && voteResult && (
+                <RoundResult
+                    socket={socket}
+                    room={room}
+                    roomId={roomId}
+                    voteResult={voteResult}
                 />
             )}
 
