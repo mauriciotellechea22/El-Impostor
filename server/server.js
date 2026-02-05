@@ -12,14 +12,23 @@ const app = express();
 const httpServer = createServer(app);
 
 // CORS configuration
+const allowedOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: allowedOrigin,
     methods: ['GET', 'POST'],
     credentials: true
 };
 
 const io = new Server(httpServer, {
-    cors: corsOptions
+    cors: {
+        origin: allowedOrigin,
+        methods: ['GET', 'POST'],
+        credentials: true,
+        allowedHeaders: ['*']
+    },
+    transports: ['websocket', 'polling'],
+    allowEIO3: true
 });
 
 const gameManager = new GameManager();
