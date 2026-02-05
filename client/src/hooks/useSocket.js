@@ -11,10 +11,11 @@ export function useSocket() {
         console.log('🔌 Attempting to connect to:', SOCKET_URL);
 
         const socketInstance = io(SOCKET_URL, {
-            transports: ['websocket', 'polling'],
+            transports: ['polling', 'websocket'], // Polling first for Railway
             withCredentials: true,
             reconnectionAttempts: 5,
-            reconnectionDelay: 1000
+            reconnectionDelay: 1000,
+            upgrade: true
         });
 
         socketInstance.on('connect', () => {
