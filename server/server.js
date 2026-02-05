@@ -37,6 +37,14 @@ const gameManager = new GameManager();
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Serve static files from React build
+import { fileURLToPath } from 'url';
+import path from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
 // Handle preflight requests explicitly
 app.options('*', cors(corsOptions));
 
@@ -283,9 +291,15 @@ function sanitizeRoomForAll(room) {
     };
 }
 
+// Catch-all route - serve React app for any non-API routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
 // Start server
 const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`🌐 CORS enabled for: ${process.env.CORS_ORIGIN || 'http://localhost:5173'}`);
+    console.log(`📁 Serving frontend from: ${path.join(__dirname, '../client/dist')}`);
 });
