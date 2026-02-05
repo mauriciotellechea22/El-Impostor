@@ -52,13 +52,27 @@ export default function GameBoard({ socket, room, roomId, isImpostor, theme }) {
                 )}
 
                 <div className="card mt-2" style={{ maxWidth: '600px', margin: '1rem auto' }}>
-                    <h3 style={{ marginBottom: '1rem' }}>Tema de esta ronda:</h3>
-                    <p style={{ fontSize: '2rem', color: 'var(--neon-green)' }}>
-                        {theme?.name || 'Cargando...'}
-                    </p>
-                    <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                        Categoría: {theme?.category?.toUpperCase() || 'N/A'}
-                    </p>
+                    {isImpostor ? (
+                        <>
+                            <h3 style={{ marginBottom: '1rem' }}>Temática de esta ronda:</h3>
+                            <p style={{ fontSize: '2.5rem', color: 'var(--neon-green)', textTransform: 'uppercase' }}>
+                                {theme?.category || 'Cargando...'}
+                            </p>
+                            <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginTop: '1rem' }}>
+                                No conoces el tema específico. Adivínalo por las pistas.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <h3 style={{ marginBottom: '1rem' }}>Tema de esta ronda:</h3>
+                            <p style={{ fontSize: '2rem', color: 'var(--neon-green)' }}>
+                                {theme?.name || 'Cargando...'}
+                            </p>
+                            <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                                Categoría: {theme?.category?.toUpperCase() || 'N/A'}
+                            </p>
+                        </>
+                    )}
                 </div>
             </div>
 
