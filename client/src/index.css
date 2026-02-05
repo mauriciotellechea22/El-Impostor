@@ -1,0 +1,369 @@
+/* 412-Inspired Theme for El Impostor */
+
+:root {
+  /* 412 Color Palette */
+  --neon-green: #00FF00;
+  --neon-green-glow: rgba(0, 255, 0, 0.5);
+  --dark-bg: #0A0A0A;
+  --dark-secondary: #1A1A1A;
+  --dark-tertiary: #2A2A2A;
+  --danger-red: #FF0033;
+  --danger-glow: rgba(255, 0, 51, 0.5);
+  --text-primary: #FFFFFF;
+  --text-secondary: #AAAAAA;
+
+  /* Fonts */
+  --font-title: 'Bebas Neue', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--dark-bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Scanline Effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.3;
+}
+
+/* Typography */
+h1,
+h2,
+h3 {
+  font-family: var(--font-title);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 4rem;
+  color: var(--neon-green);
+  text-shadow: 0 0 20px var(--neon-green-glow);
+}
+
+h2 {
+  font-size: 2.5rem;
+  color: var(--neon-green);
+}
+
+h3 {
+  font-size: 1.8rem;
+}
+
+/* Glitch Text Effect */
+.glitch {
+  position: relative;
+  animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+
+  0%,
+  90%,
+  100% {
+    transform: translate(0);
+  }
+
+  92%,
+  96% {
+    transform: translate(-2px, 2px);
+  }
+
+  94%,
+  98% {
+    transform: translate(2px, -2px);
+  }
+}
+
+/* Neon Glow Button */
+.btn {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  padding: 1rem 3rem;
+  background: transparent;
+  border: 2px solid var(--neon-green);
+  color: var(--neon-green);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--neon-green);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.btn:hover {
+  color: var(--dark-bg);
+  box-shadow: 0 0 20px var(--neon-green-glow);
+}
+
+.btn:hover::before {
+  left: 0;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.btn:disabled::before {
+  display: none;
+}
+
+/* Danger Button (Impostor theme) */
+.btn-danger {
+  border-color: var(--danger-red);
+  color: var(--danger-red);
+}
+
+.btn-danger::before {
+  background: var(--danger-red);
+}
+
+.btn-danger:hover {
+  box-shadow: 0 0 20px var(--danger-glow);
+}
+
+/* Card/Panel */
+.card {
+  background: var(--dark-secondary);
+  border: 1px solid var(--neon-green);
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.1);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(45deg, var(--neon-green), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.card:hover::before {
+  opacity: 0.1;
+}
+
+/* Input Fields */
+.input {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  padding: 1rem;
+  background: var(--dark-bg);
+  border: 2px solid var(--dark-tertiary);
+  color: var(--text-primary);
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green-glow);
+}
+
+/* Player Card */
+.player-card {
+  background: var(--dark-secondary);
+  border: 2px solid var(--dark-tertiary);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.player-card:hover {
+  border-color: var(--neon-green);
+  transform: translateX(5px);
+}
+
+.player-card.eliminated {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.player-card.impostor {
+  border-color: var(--danger-red);
+  box-shadow: 0 0 15px var(--danger-glow);
+}
+
+/* Clue Display */
+.clue {
+  background: var(--dark-tertiary);
+  border-left: 3px solid var(--neon-green);
+  padding: 0.8rem 1.2rem;
+  margin: 0.5rem 0;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Timer */
+.timer {
+  font-family: var(--font-title);
+  font-size: 3rem;
+  color: var(--neon-green);
+  text-align: center;
+  animation: pulse 1s infinite;
+}
+
+.timer.warning {
+  color: var(--danger-red);
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Logo 412 Style */
+.logo {
+  font-family: var(--font-title);
+  font-size: 5rem;
+  color: var(--neon-green);
+  text-shadow:
+    0 0 10px var(--neon-green-glow),
+    0 0 20px var(--neon-green-glow),
+    0 0 30px var(--neon-green-glow);
+  letter-spacing: 5px;
+}
+
+/* Utilities */
+.text-center {
+  text-align: center;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.mt-2 {
+  margin-top: 2rem;
+}
+
+.mt-3 {
+  margin-top: 3rem;
+}
+
+.mb-1 {
+  margin-bottom: 1rem;
+}
+
+.mb-2 {
+  margin-bottom: 2rem;
+}
+
+.mb-3 {
+  margin-bottom: 3rem;
+}
+
+.gap-1 {
+  gap: 1rem;
+}
+
+.gap-2 {
+  gap: 2rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .btn {
+    font-size: 1.2rem;
+    padding: 0.8rem 2rem;
+  }
+
+  .logo {
+    font-size: 3rem;
+  }
+}
