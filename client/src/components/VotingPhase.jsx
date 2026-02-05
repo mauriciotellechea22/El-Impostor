@@ -46,7 +46,7 @@ export default function VotingPhase({ socket, room, roomId }) {
                                     })
                                 }}
                             >
-                                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center', color: 'white' }}>
                                     {player.name}
                                 </div>
                             </button>

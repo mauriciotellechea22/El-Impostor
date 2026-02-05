@@ -1,5 +1,12 @@
 export default function RoundResult({ socket, room, roomId, voteResult }) {
+    console.log('🔄 RoundResult component rendered', {
+        isHost: room.isHost,
+        currentRound: room.currentRound,
+        maxRounds: room.maxRounds || room.totalRounds
+    });
+
     const handleNextRound = () => {
+        console.log('📤 Emitting continueToNextRound', { roomId });
         socket.emit('continueToNextRound', { roomId });
     };
 
@@ -48,12 +55,17 @@ export default function RoundResult({ socket, room, roomId, voteResult }) {
                 <button
                     className="btn"
                     onClick={handleNextRound}
+                    style={{
+                        fontSize: '1.5rem',
+                        padding: '1.5rem 3rem',
+                        marginTop: '2rem'
+                    }}
                 >
                     Continuar a Ronda {room.currentRound}
                 </button>
             ) : (
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
-                    Esperando que el host continue...
+                <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '2rem' }}>
+                    Esperando que el host continúe...
                 </p>
             )}
         </div>
