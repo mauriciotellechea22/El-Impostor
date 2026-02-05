@@ -53,7 +53,13 @@ export default function Room({ socket }) {
         socket.on('gameOver', ({ winner, impostorId, theme: revealedTheme, clues }) => {
             setGamePhase('results');
             setTheme(revealedTheme);
-            setRoom(prev => ({ ...prev, winner, impostorId, allClues: clues }));
+            setRoom(prev => ({
+                ...prev,
+                winner,
+                impostorId,
+                theme: revealedTheme,
+                allClues: clues
+            }));
         });
 
         socket.on('error', ({ message }) => {

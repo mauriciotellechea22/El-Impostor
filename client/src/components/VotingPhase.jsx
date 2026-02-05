@@ -29,26 +29,28 @@ export default function VotingPhase({ socket, room, roomId }) {
                     gap: '1rem',
                     marginTop: '2rem'
                 }}>
-                    {alivePlayers.map((player) => (
-                        <button
-                            key={player.id}
-                            className={`player-card ${selectedPlayer === player.id ? 'impostor' : ''}`}
-                            onClick={() => !hasVoted && setSelectedPlayer(player.id)}
-                            disabled={hasVoted}
-                            style={{
-                                cursor: hasVoted ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.3s ease',
-                                ...(selectedPlayer === player.id && {
-                                    borderColor: 'var(--danger-red)',
-                                    transform: 'scale(1.05)'
-                                })
-                            }}
-                        >
-                            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
-                                {player.name}
-                            </div>
-                        </button>
-                    ))}
+                    {alivePlayers
+                        .filter(player => player.id !== socket.id) // Can't vote for yourself
+                        .map((player) => (
+                            <button
+                                key={player.id}
+                                className={`player-card ${selectedPlayer === player.id ? 'impostor' : ''}`}
+                                onClick={() => !hasVoted && setSelectedPlayer(player.id)}
+                                disabled={hasVoted}
+                                style={{
+                                    cursor: hasVoted ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    ...(selectedPlayer === player.id && {
+                                        borderColor: 'var(--danger-red)',
+                                        transform: 'scale(1.05)'
+                                    })
+                                }}
+                            >
+                                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
+                                    {player.name}
+                                </div>
+                            </button>
+                        ))}
                 </div>
 
                 {!hasVoted && (
